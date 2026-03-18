@@ -6,16 +6,17 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 export async function analyzeCallAudio(base64Audio: string, mimeType: string, fileName?: string): Promise<CallAnalysis> {
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3.1-pro-preview",
-      contents: [
-        {
-          inlineData: {
-            data: base64Audio,
-            mimeType: mimeType,
+      model: "gemini-3-flash-preview",
+      contents: {
+        parts: [
+          {
+            inlineData: {
+              data: base64Audio,
+              mimeType: mimeType,
+            },
           },
-        },
-        {
-          text: `You are an expert sales and support call auditor. Analyze the provided audio recording of a call.
+          {
+            text: `You are an expert sales and support call auditor. Analyze the provided audio recording of a call.
           
   Extract and evaluate the following information:
   1. Agent's Name
@@ -34,8 +35,9 @@ export async function analyzeCallAudio(base64Audio: string, mimeType: string, fi
   9. Transcript: Provide a full conversation flow (transcript) distinguishing between the Agent and the Customer.
   
   Be objective, deep, and highly analytical. Provide constructive criticism.`
-        }
-      ],
+          }
+        ]
+      },
       config: {
         responseMimeType: "application/json",
         responseSchema: {
