@@ -1,0 +1,5 @@
+{
+  "name": "Call Audit AI",
+  "description": "Real-time and post-call audio analysis for sales and support calls.",
+  "requestFramePermissions": ["microphone"]
+}
