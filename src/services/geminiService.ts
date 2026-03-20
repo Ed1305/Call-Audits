@@ -20,8 +20,17 @@ export async function analyzeCallAudio(base64Audio: string, mimeType: string, fi
           
   Extract and evaluate the following information:
   1. Agent's Name
-  2. Agent's Employee Code (Get the Agent EMP CODE in the file starting with IN followed by numbers. Extract exactly what was said).
-  3. Call Disposition. Choose exactly one from this list: CALLBK, CC, CNP, NI, DNC, DNQ, SALE. If unsure, pick the closest one or UNKNOWN.
+  2. Client's Name (Extract the full name of the customer/client, properly capitalized and formatted. If not mentioned, output 'Unknown').
+  3. Agent's Employee Code (Get the Agent EMP CODE in the file starting with IN followed by numbers. Extract exactly what was said).
+  4. Call Disposition. Choose exactly one from this list based on the deep analysis of the call:
+     - CALLBK: CallBack Presentation (A callback was scheduled AFTER a presentation was made)
+     - CC: Call cut (The call was disconnected abruptly or hung up)
+     - CNP: Callback no Presentation (A callback was scheduled BEFORE a presentation was made)
+     - DNC: Do not Call (The prospect explicitly asked not to be called again)
+     - DNQ: Do not Qualify (The prospect did not meet the qualifying criteria)
+     - NI: Not interested (The prospect expressed a lack of interest)
+     - SALE: A successful sale was made
+     If unsure, pick the closest one or UNKNOWN.
   4. What went wrong in the call (areas of failure, missed opportunities, mistakes).
   5. What could have been done better (actionable feedback for the agent).
   6. Detailed analysis of specific skills:
@@ -45,6 +54,7 @@ export async function analyzeCallAudio(base64Audio: string, mimeType: string, fi
           type: Type.OBJECT,
           properties: {
             agentName: { type: Type.STRING, description: "The name of the agent." },
+            clientName: { type: Type.STRING, description: "The full name of the client/customer, properly capitalized." },
             employeeCode: { type: Type.STRING, description: "The agent's employee code, starting with IN followed by numbers." },
             disposition: { 
               type: Type.STRING, 
@@ -90,7 +100,7 @@ export async function analyzeCallAudio(base64Audio: string, mimeType: string, fi
               }
             }
           },
-          required: ["agentName", "employeeCode", "disposition", "whatWentWrong", "whatCouldHaveBeenDone", "analysis", "toneAnalysis", "overallScore", "summary", "transcript"]
+          required: ["agentName", "clientName", "employeeCode", "disposition", "whatWentWrong", "whatCouldHaveBeenDone", "analysis", "toneAnalysis", "overallScore", "summary", "transcript"]
         }
       }
     });

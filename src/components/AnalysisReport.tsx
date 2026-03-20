@@ -16,10 +16,26 @@ export function AnalysisReport({ data }: Props) {
   const getDispositionColor = (disp: string) => {
     switch (disp) {
       case 'SALE': return 'bg-green-100 text-green-800 border-green-200';
-      case 'CALLBK': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'CALLBK': 
+      case 'CNP': return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'DNC':
-      case 'DNQ': return 'bg-red-100 text-red-800 border-red-200';
+      case 'DNQ':
+      case 'CC':
+      case 'NI': return 'bg-red-100 text-red-800 border-red-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getDispositionLabel = (disp: string) => {
+    switch (disp) {
+      case 'CALLBK': return 'CALLBK (CallBack Presentation)';
+      case 'CC': return 'CC (Call Cut)';
+      case 'CNP': return 'CNP (Callback No Presentation)';
+      case 'DNC': return 'DNC (Do Not Call)';
+      case 'DNQ': return 'DNQ (Do Not Qualify)';
+      case 'NI': return 'NI (Not Interested)';
+      case 'SALE': return 'SALE (Sale Closed)';
+      default: return disp;
     }
   };
 
@@ -27,7 +43,7 @@ export function AnalysisReport({ data }: Props) {
     <div className="w-full max-w-5xl mx-auto mt-8 space-y-6 pb-12">
       
       {/* Header Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-center gap-4">
           <div className="bg-blue-50 p-3 rounded-lg text-blue-600">
             <User className="w-6 h-6" />
@@ -35,6 +51,16 @@ export function AnalysisReport({ data }: Props) {
           <div>
             <p className="text-sm text-gray-500 font-medium">Agent Name</p>
             <p className="text-lg font-semibold text-gray-900">{data.agentName || 'Unknown'}</p>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-center gap-4">
+          <div className="bg-teal-50 p-3 rounded-lg text-teal-600">
+            <User className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-sm text-gray-500 font-medium">Client Name</p>
+            <p className="text-lg font-semibold text-gray-900">{data.clientName || 'Unknown'}</p>
           </div>
         </div>
 
@@ -65,7 +91,7 @@ export function AnalysisReport({ data }: Props) {
           <div className="flex-1">
             <p className="text-sm text-gray-500 font-medium">Disposition</p>
             <span className={`inline-block px-2.5 py-0.5 rounded-full text-sm font-semibold border mt-1 ${getDispositionColor(data.disposition)}`}>
-              {data.disposition}
+              {getDispositionLabel(data.disposition)}
             </span>
             {data.dispositionFeedback && data.dispositionFeedback !== "Valid disposition." && (
               <p className="text-xs mt-2 text-yellow-600 flex items-start gap-1">

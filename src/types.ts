@@ -1,5 +1,6 @@
 export interface CallAnalysis {
   agentName: string;
+  clientName: string;
   employeeCode: string;
   employeeCodeValid: boolean;
   employeeCodeFeedback: string;
