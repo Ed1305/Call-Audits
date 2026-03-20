@@ -14,6 +14,13 @@ export interface CallAnalysis {
     discoveryQuestions: string;
     qualifyingQuestions: string;
   };
+  toneAnalysis: {
+    overallTone: string;
+    energyLevel: string;
+    empathyScore: number;
+    pacing: string;
+    coachingFeedback: string;
+  };
   overallScore: number;
   summary: string;
   transcript: { speaker: string; text: string }[];

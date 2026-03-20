@@ -30,9 +30,10 @@ export async function analyzeCallAudio(base64Audio: string, mimeType: string, fi
      - Need Creating: Did the agent successfully build a need for the product/service?
      - Discovery Questions: Did the agent ask good open-ended questions to understand the prospect?
      - Qualifying Questions: Did the agent properly qualify the prospect (budget, authority, need, timeline)?
-  7. Overall Score: A number from 0 to 100 representing the overall quality of the call.
-  8. Summary: A brief 2-3 sentence summary of the entire interaction.
-  9. Transcript: Provide a full conversation flow (transcript) distinguishing between the Agent and the Customer.
+  7. Tone Analysis: Deeply analyze the agent's vocal tone, energy, empathy, and pacing. Provide specific coaching feedback based on their tone.
+  8. Overall Score: A number from 0 to 100 representing the overall quality of the call.
+  9. Summary: A brief 2-3 sentence summary of the entire interaction.
+  10. Transcript: Provide a full conversation flow (transcript) distinguishing between the Agent and the Customer.
   
   Be objective, deep, and highly analytical. Provide constructive criticism.`
           }
@@ -63,6 +64,17 @@ export async function analyzeCallAudio(base64Audio: string, mimeType: string, fi
               },
               required: ["pitch", "attitude", "needCreating", "discoveryQuestions", "qualifyingQuestions"]
             },
+            toneAnalysis: {
+              type: Type.OBJECT,
+              properties: {
+                overallTone: { type: Type.STRING, description: "Overall description of the agent's tone (e.g., 'Professional but rushed', 'Empathetic and calm')." },
+                energyLevel: { type: Type.STRING, description: "The agent's energy level (e.g., 'High', 'Medium', 'Low')." },
+                empathyScore: { type: Type.NUMBER, description: "Score from 0 to 100 representing how empathetic the agent sounded." },
+                pacing: { type: Type.STRING, description: "The speed and pacing of the agent's speech (e.g., 'Too fast', 'Appropriate', 'Too slow')." },
+                coachingFeedback: { type: Type.STRING, description: "Specific, actionable coaching feedback focused entirely on improving the agent's tone." }
+              },
+              required: ["overallTone", "energyLevel", "empathyScore", "pacing", "coachingFeedback"]
+            },
             overallScore: { type: Type.NUMBER, description: "Score from 0 to 100." },
             summary: { type: Type.STRING, description: "Brief summary of the call." },
             transcript: {
@@ -78,7 +90,7 @@ export async function analyzeCallAudio(base64Audio: string, mimeType: string, fi
               }
             }
           },
-          required: ["agentName", "employeeCode", "disposition", "whatWentWrong", "whatCouldHaveBeenDone", "analysis", "overallScore", "summary", "transcript"]
+          required: ["agentName", "employeeCode", "disposition", "whatWentWrong", "whatCouldHaveBeenDone", "analysis", "toneAnalysis", "overallScore", "summary", "transcript"]
         }
       }
     });

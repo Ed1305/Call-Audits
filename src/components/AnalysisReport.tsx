@@ -148,6 +148,39 @@ export function AnalysisReport({ data }: Props) {
             content={data.analysis.qualifyingQuestions} 
           />
 
+          {data.toneAnalysis && (
+            <>
+              <AnalysisRow 
+                title="Overall Tone" 
+                icon={<MessageSquare className="w-5 h-5 text-indigo-500" />}
+                content={data.toneAnalysis.overallTone} 
+              />
+              <AnalysisRow 
+                title="Energy & Pacing" 
+                icon={<Activity className="w-5 h-5 text-pink-500" />}
+                content={`Energy: ${data.toneAnalysis.energyLevel} | Pacing: ${data.toneAnalysis.pacing}`} 
+              />
+              <AnalysisRow 
+                title="Empathy & Coaching" 
+                icon={<Target className="w-5 h-5 text-rose-500" />}
+                content={
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <span className="font-medium text-gray-900">Empathy Score: {data.toneAnalysis.empathyScore}/100</span>
+                      <div className="w-32 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-rose-500 h-2 rounded-full" 
+                          style={{ width: `${data.toneAnalysis.empathyScore}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <p>{data.toneAnalysis.coachingFeedback}</p>
+                  </div>
+                } 
+              />
+            </>
+          )}
+
         </div>
       </div>
 
@@ -186,7 +219,7 @@ export function AnalysisReport({ data }: Props) {
   );
 }
 
-function AnalysisRow({ title, icon, content }: { title: string, icon: React.ReactNode, content: string }) {
+function AnalysisRow({ title, icon, content }: { title: string, icon: React.ReactNode, content: React.ReactNode }) {
   return (
     <div className="p-6 flex flex-col sm:flex-row gap-4 hover:bg-gray-50 transition-colors">
       <div className="sm:w-1/4 flex items-center gap-3 font-medium text-gray-900">
