@@ -16,7 +16,7 @@ export interface LLMProvider {
   ): Promise<NormalizedAudit>;
 }
 
-export function useGeminiListenMode(): boolean {
+export function isGeminiListenMode(): boolean {
   const provider = (process.env.LLM_PROVIDER || "").toLowerCase();
   if (provider !== "gemini") return false;
   const mode = (process.env.LISTEN_MODE || "audio").toLowerCase();

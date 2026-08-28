@@ -1,6 +1,6 @@
 import { commitCallResult, db, initDatabase, resolveScorecard } from "@/lib/db";
 import { runAudioProcessor } from "@/lib/processing/audio-processor";
-import { useGeminiListenMode } from "@/lib/ai/llm-provider";
+import { isGeminiListenMode } from "@/lib/ai/llm-provider";
 import {
   listenResultFromTranscript,
   runListenPass,
@@ -270,7 +270,7 @@ export async function processCall(callId: string): Promise<void> {
   if (!call) throw new Error(`Call ${callId} not found`);
 
   try {
-    if (useGeminiListenMode()) {
+    if (isGeminiListenMode()) {
       await processWithGeminiListen(callId);
     } else {
       await processWithTranscriptPipeline(callId);
