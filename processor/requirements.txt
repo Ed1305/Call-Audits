@@ -1,0 +1,8 @@
+faster-whisper>=1.0.0
+huggingface_hub>=0.20.0
+soundfile>=0.12.1
+
+# Speaker diarization (requires HF_TOKEN + accepting model terms on HuggingFace)
+pyannote.audio>=3.1.0
+torch>=2.0.0
+torchaudio>=2.0.0

@@ -1,0 +1,60 @@
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&family=Ubuntu+Mono:wght@400;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-ubuntu-border-light dark:border-ubuntu-border-dark;
+  }
+
+  body {
+    @apply font-ubuntu antialiased;
+    @apply bg-ubuntu-window-light dark:bg-ubuntu-window-dark;
+    @apply text-ubuntu-text-dark dark:text-ubuntu-text-light;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-400/50 dark:bg-gray-600/50 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-500;
+  }
+}
+
+@layer components {
+  .gnome-table {
+    @apply w-full text-sm font-ubuntu;
+  }
+
+  .gnome-table thead {
+    @apply bg-gray-100 dark:bg-[#333] border-b border-ubuntu-border-light dark:border-ubuntu-border-dark;
+  }
+
+  .gnome-table th {
+    @apply px-4 py-2.5 text-left font-medium text-ubuntu-text-dark dark:text-ubuntu-text-light;
+  }
+
+  .gnome-table td {
+    @apply px-4 py-3 border-b border-ubuntu-border-light/50 dark:border-ubuntu-border-dark/50;
+  }
+
+  .gnome-table tbody tr:nth-child(even) {
+    @apply bg-ubuntu-row-alt-light dark:bg-ubuntu-row-alt-dark;
+  }
+
+  .gnome-table tbody tr:hover {
+    @apply bg-ubuntu-orange/5;
+  }
+}
