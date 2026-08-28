@@ -94,34 +94,55 @@ Status path: `uploaded → listening → analyzing → completed`.
 
 Set `ALLOW_DEMO_FALLBACK=true` only for demos — otherwise missing keys/failures surface as real errors.
 
-## Deploy (Railway / Render — not Vercel)
+## Deploy (Render — not Vercel, not Railway free)
 
-This app writes a JSON database and audio files to disk, and Gemini listen jobs can run for several minutes. **Vercel’s serverless filesystem is ephemeral and function timeouts are too short**, so it will not keep uploads or finish audits.
+This app writes a JSON database and audio files to disk, and Gemini listen jobs can run for several minutes. **Vercel** cannot keep files or wait long enough. **Railway** works, but a ended trial means a paid plan.
 
-Use a host with a persistent volume:
+**Render** is the closest Railway-style option. You need a paid web service so you can attach a **persistent disk**. The free Render web service sleeps and has no disk — uploads would vanish.
 
-### Railway (recommended)
+### Render (step by step)
 
-1. Push this repo to GitHub.
-2. New Railway project → Deploy from GitHub. Railway will pick up the `Dockerfile`.
-3. Add a **volume** mounted at `/data`.
-4. Set variables (same as `.env`):
+1. Push this repo to GitHub (already on [Ed1305/Call-Audits](https://github.com/Ed1305/Call-Audits)).
+2. Sign up at [render.com](https://render.com) with GitHub.
+3. **New** → **Blueprint** and select this repo (it reads `render.yaml`), **or** **New** → **Web Service** → this repo.
+4. If you create the web service manually:
+   - Runtime: **Docker**
+   - Instance: **Starter** (or any paid instance — disk is not available on free)
+5. Add a **Persistent Disk**:
+   - Name: `callaudit-data`
+   - Mount path: `/data`
+   - Size: 10 GB is plenty to start
+6. Environment variables:
 
 ```
 LLM_PROVIDER=gemini
 LISTEN_MODE=audio
-GEMINI_API_KEY=...
+GEMINI_API_KEY=your-real-key
 GEMINI_MODEL=gemini-3.6-flash
 ALLOW_DEMO_FALLBACK=false
 DATABASE_PATH=/data/callaudit.json
 UPLOAD_DIR=/data/uploads
+PROCESSOR_ENABLED=false
+HOSTNAME=0.0.0.0
 ```
 
-5. Generate a public domain in Railway settings.
+Do not set `PORT` — Render injects it.
 
-### Render
+7. Deploy. Open the `onrender.com` URL, check Settings → Scorecards, then upload a short call.
 
-Same Dockerfile. Create a **persistent disk** at `/data`, set the env vars above, and use `node server.js` as the start command (the image already does).
+### Cheaper always-on alternative: a VPS
+
+If Render’s starter price is more than you want, a small VPS is usually cheaper and has no request-timeout drama:
+
+- [Hetzner Cloud](https://www.hetzner.com/cloud) CX22 (~€4/month), or DigitalOcean $6 droplet
+- Install Docker, clone the repo, run:
+
+```bash
+docker build -t callaudit .
+docker run -d --name callaudit -p 80:3000 --env-file .env -v callaudit-data:/data --restart unless-stopped callaudit
+```
+
+Put your real `GEMINI_API_KEY` in `.env` on the server (`DATABASE_PATH=/data/callaudit.json` and `UPLOAD_DIR=/data/uploads`).
 
 ### Local Docker
 
