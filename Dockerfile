@@ -30,9 +30,20 @@ RUN apk add --no-cache su-exec \
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY docker-entrypoint.sh /app/docker-entrypoint.sh
-RUN chmod +x /app/docker-entrypoint.sh
+
+# Write the entrypoint in the Linux image so Windows CRLF cannot break exec
+RUN printf '%s\n' \
+  '#!/bin/sh' \
+  'set -e' \
+  'mkdir -p /tmp/uploads /data/uploads' \
+  'if [ "$(id -u)" = "0" ]; then' \
+  '  chown -R nextjs:nodejs /tmp/uploads /data 2>/dev/null || true' \
+  '  exec su-exec nextjs node server.js' \
+  'fi' \
+  'exec node server.js' \
+  > /app/docker-entrypoint.sh \
+  && chmod +x /app/docker-entrypoint.sh
 
 EXPOSE 3000
 VOLUME ["/data"]
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
