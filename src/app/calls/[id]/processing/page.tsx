@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { GnomeSpinner } from "@/components/ui/Spinner";
 import { PROCESSING_STEPS } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { rememberCall } from "@/lib/history/local-history";
 
 export default function ProcessingPage() {
   const params = useParams();
@@ -31,6 +32,7 @@ export default function ProcessingPage() {
         setPollCount((c) => c + 1);
 
         if (data.uploadStatus === "completed") {
+          rememberCall(data);
           setTimeout(() => router.replace(`/calls/${callId}`), 2000);
         }
       } catch {

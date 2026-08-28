@@ -7,6 +7,11 @@ import { GnomeWindow } from "@/components/ui/GnomeWindow";
 import { Input } from "@/components/ui/Input";
 import { GnomeSpinner } from "@/components/ui/Spinner";
 import { formatDate, formatDuration } from "@/lib/utils";
+import {
+  listRememberedCalls,
+  mergeCallLists,
+  type HistoryListItem,
+} from "@/lib/history/local-history";
 
 interface CallItem {
   id: string;
@@ -26,9 +31,13 @@ export default function CallsPage() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
+    const local = listRememberedCalls();
     fetch("/api/calls")
-      .then((r) => r.json())
-      .then(setCalls)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((remote: HistoryListItem[]) => {
+        setCalls(mergeCallLists(Array.isArray(remote) ? remote : [], local));
+      })
+      .catch(() => setCalls(local))
       .finally(() => setLoading(false));
   }, []);
 
@@ -43,6 +52,8 @@ export default function CallsPage() {
           <h1 className="font-ubuntu text-2xl font-bold">Call History</h1>
           <p className="font-ubuntu text-sm text-gray-500 mt-1">
             {calls.length} call{calls.length !== 1 ? "s" : ""} total
+            {" · "}
+            saved in this browser
           </p>
         </div>
         <Link

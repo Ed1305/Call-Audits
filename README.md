@@ -94,24 +94,19 @@ Status path: `uploaded → listening → analyzing → completed`.
 
 Set `ALLOW_DEMO_FALLBACK=true` only for demos — otherwise missing keys/failures surface as real errors.
 
-## Deploy (Render — not Vercel, not Railway free)
+## Deploy (free on Render)
 
-This app writes a JSON database and audio files to disk, and Gemini listen jobs can run for several minutes. **Vercel** cannot keep files or wait long enough. **Railway** works, but a ended trial means a paid plan.
+You do **not** need a paid disk. Audio is discarded after the audit. Call History is saved **in the browser** (this computer), so it survives Render going to sleep.
 
-**Render** is the closest Railway-style option. You need a paid web service so you can attach a **persistent disk**. The free Render web service sleeps and has no disk — uploads would vanish.
+**Vercel still will not work** — Gemini listen takes longer than Vercel’s time limit.
 
-### Render (step by step)
+### Render free (step by step)
 
-1. Push this repo to GitHub (already on [Ed1305/Call-Audits](https://github.com/Ed1305/Call-Audits)).
-2. Sign up at [render.com](https://render.com) with GitHub.
-3. **New** → **Blueprint** and select this repo (it reads `render.yaml`), **or** **New** → **Web Service** → this repo.
-4. If you create the web service manually:
-   - Runtime: **Docker**
-   - Instance: **Starter** (or any paid instance — disk is not available on free)
-5. Add a **Persistent Disk**:
-   - Name: `callaudit-data`
-   - Mount path: `/data`
-   - Size: 10 GB is plenty to start
+1. This repo is on [Ed1305/Call-Audits](https://github.com/Ed1305/Call-Audits).
+2. Sign up at [render.com](https://render.com) with GitHub (free).
+3. **New** → **Web Service** → this repo.
+4. Runtime: **Docker**. Instance: **Free**.
+5. Do **not** add a disk.
 6. Environment variables:
 
 ```
@@ -120,15 +115,24 @@ LISTEN_MODE=audio
 GEMINI_API_KEY=your-real-key
 GEMINI_MODEL=gemini-3.6-flash
 ALLOW_DEMO_FALLBACK=false
-DATABASE_PATH=/data/callaudit.json
-UPLOAD_DIR=/data/uploads
+DATABASE_PATH=/tmp/callaudit.json
+UPLOAD_DIR=/tmp/uploads
+KEEP_AUDIO=false
 PROCESSOR_ENABLED=false
 HOSTNAME=0.0.0.0
 ```
 
-Do not set `PORT` — Render injects it.
+Do not set `PORT`.
 
-7. Deploy. Open the `onrender.com` URL, check Settings → Scorecards, then upload a short call.
+7. Deploy, open the `onrender.com` URL, upload a call. When it finishes, it appears under **Call History** on that browser.
+
+The first request after idle can take a minute (free instances sleep). Stay on the processing page until it completes.
+
+History is per-browser: another computer or a cleared cache starts empty. The PDF download still works from a saved report.
+
+### Paid disk (only if you need shared history)
+
+Render Starter + a disk at `/data` keeps history on the server for every user. Most people do not need this.
 
 ### Cheaper always-on alternative: a VPS
 

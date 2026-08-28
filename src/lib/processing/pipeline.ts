@@ -18,6 +18,7 @@ import {
   preferPersonName,
   resolveCallNames,
 } from "@/lib/ai/call-quality";
+import { unlink } from "fs/promises";
 
 initDatabase();
 
@@ -249,6 +250,21 @@ async function processWithTranscriptPipeline(callId: string): Promise<void> {
   commitCallResult({ callId, ...bundle });
 }
 
+async function discardAudioIfConfigured(filePath: string): Promise<void> {
+  const flag = (process.env.KEEP_AUDIO || "").toLowerCase();
+  const keep =
+    flag === "true" ||
+    flag === "1" ||
+    (flag === "" && process.env.NODE_ENV !== "production");
+  if (keep) return;
+  try {
+    await unlink(filePath);
+    console.log(`[pipeline] Discarded audio ${filePath}`);
+  } catch {
+    /* already gone */
+  }
+}
+
 export async function processCall(callId: string): Promise<void> {
   const call = db.callRecords.findById(callId);
   if (!call) throw new Error(`Call ${callId} not found`);
@@ -258,6 +274,10 @@ export async function processCall(callId: string): Promise<void> {
       await processWithGeminiListen(callId);
     } else {
       await processWithTranscriptPipeline(callId);
+    }
+    const finished = db.callRecords.findById(callId);
+    if (finished?.originalPath) {
+      await discardAudioIfConfigured(finished.originalPath);
     }
   } catch (err) {
     const message =

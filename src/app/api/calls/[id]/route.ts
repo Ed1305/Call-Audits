@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { existsSync } from "fs";
+import path from "path";
 import { db, initDatabase } from "@/lib/db";
 
 initDatabase();
@@ -43,9 +45,12 @@ export async function GET(
       }
     : null;
 
+  const audioPath = path.resolve(call.originalPath);
+  const hasAudio = Boolean(call.originalPath && existsSync(audioPath));
+
   return NextResponse.json({
     ...call,
-    audioUrl: `/api/calls/${id}/audio`,
+    audioUrl: hasAudio ? `/api/calls/${id}/audio` : null,
     participants,
     transcript,
     disposition,

@@ -26,13 +26,14 @@ import {
 import { generatePDF } from "@/lib/pdf/generate-pdf";
 import { GnomeAudioPlayer } from "@/components/ui/GnomeAudioPlayer";
 import { showToast } from "@/components/ui/Toast";
+import { getRememberedCall, rememberCall } from "@/lib/history/local-history";
 
 interface CallDetail {
   id: string;
   filename: string;
   uploadStatus: string;
   audioDuration: number | null;
-  audioUrl?: string;
+  audioUrl?: string | null;
   agentDisposition: string | null;
   createdAt: string;
   participants: { id: string; role: string; name: string; confidence: number }[];
@@ -81,7 +82,14 @@ export default function CallDetailPage() {
 
   useEffect(() => {
     fetch(`/api/calls/${callId}`)
-      .then((r) => r.json())
+      .then(async (r) => {
+        if (r.ok) {
+          const data = (await r.json()) as CallDetail;
+          if (data.uploadStatus === "completed") rememberCall(data);
+          return data;
+        }
+        return getRememberedCall<CallDetail>(callId);
+      })
       .then(setCall)
       .finally(() => setLoading(false));
   }, [callId]);

@@ -16,15 +16,16 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV DATABASE_PATH=/data/callaudit.json
-ENV UPLOAD_DIR=/data/uploads
+ENV DATABASE_PATH=/tmp/callaudit.json
+ENV UPLOAD_DIR=/tmp/uploads
+ENV KEEP_AUDIO=false
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
 RUN apk add --no-cache su-exec \
   && addgroup -S nodejs && adduser -S nextjs -G nodejs \
-  && mkdir -p /data/uploads \
-  && chown -R nextjs:nodejs /data
+  && mkdir -p /tmp/uploads /data/uploads \
+  && chown -R nextjs:nodejs /tmp/uploads /data
 
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./

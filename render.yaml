@@ -4,10 +4,6 @@ services:
     runtime: docker
     dockerfilePath: ./Dockerfile
     healthCheckPath: /
-    disk:
-      name: callaudit-data
-      mountPath: /data
-      sizeGB: 10
     envVars:
       - key: LLM_PROVIDER
         value: gemini
@@ -18,9 +14,11 @@ services:
       - key: ALLOW_DEMO_FALLBACK
         value: "false"
       - key: DATABASE_PATH
-        value: /data/callaudit.json
+        value: /tmp/callaudit.json
       - key: UPLOAD_DIR
-        value: /data/uploads
+        value: /tmp/uploads
+      - key: KEEP_AUDIO
+        value: "false"
       - key: PROCESSOR_ENABLED
         value: "false"
       - key: HOSTNAME
